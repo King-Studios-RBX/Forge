@@ -45,7 +45,7 @@ rojo.json.backup
 
 # rbxtsc output
 include/
-types/
+# types/ - allow out/types and src/types
 
 # ==========================================
 # Dev environments
