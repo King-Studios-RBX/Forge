@@ -98,3 +98,6 @@ Desktop.ini
 .turbo/
 .pnp/
 .pnp.js
+
+# Allow source type declarations
+!src/types/

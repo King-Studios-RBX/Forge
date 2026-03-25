@@ -6,6 +6,7 @@ import type { AppForge } from "@root/forge";
 
 // Rules
 import ParentRule from "./checks/parent";
+import ExclusiveGroupRule from "./checks/exclusiveGroup";
 
 // Components
 import { AppRegistry } from "@registries/apps";
@@ -35,6 +36,7 @@ export default class Rules {
 		this.processing.add(key);
 		try {
 			ParentRule(forge, name, group);
+			ExclusiveGroupRule(forge, name, group);
 		} finally {
 			this.processing.delete(key);
 		}

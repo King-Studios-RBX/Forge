@@ -1,6 +1,6 @@
 {
 	"name": "@rbxts/forge",
-	"version": "0.4.6",
+	"version": "0.4.9",
 	"description": "An App Manager for Vide",
 	"main": "out/init.lua",
 	"types": "out/index.d.ts",
@@ -17,7 +17,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Loner1536/Forge"
+		"url": "https://github.com/King-Studios-RBX/Forge"
 	},
 	"bugs": {
 		"url": "https://github.com/Loner1536/Forge/issues"
