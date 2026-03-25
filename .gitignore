@@ -10,8 +10,6 @@ yarn.lock
 pnpm-lock.yaml
 
 # Build output
-dist/
-out/
 build/
 release.rbxlx
 release.rbxl
