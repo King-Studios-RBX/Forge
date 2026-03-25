@@ -70,7 +70,7 @@ declare namespace Types {
 		export type App = {
 			/** When set, only one app in the same exclusiveGroup can be visible at a time. */
 			exclusiveGroup?: string;
-		};
+		} & Partial<WithParent>;
 
 		export type ChildApp = {
 			/** When set, only one app in the same exclusiveGroup can be visible at a time. */
