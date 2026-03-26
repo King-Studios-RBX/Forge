@@ -1,6 +1,6 @@
 {
 	"name": "@king-studios-rbx/forge",
-	"version": "0.4.11",
+	"version": "0.4.12",
 	"description": "An App Manager for Vide",
 	"main": "out/init.lua",
 	"types": "out/index.d.ts",
