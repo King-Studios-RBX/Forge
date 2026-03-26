@@ -36,6 +36,8 @@ local function FadeComponent(props)
 	_attributes.Rotation = props.rotation
 	_attributes.LayoutOrder = props.layoutOrder
 	_attributes.ZIndex = props.zIndex
+	_attributes.Visible = props.visible
+	_attributes.Interactable = props.visible
 	_attributes.Parent = props.parent
 	local _attribute = props.events
 	if _attribute then

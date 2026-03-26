@@ -3,6 +3,7 @@ type FadeProps = {
     name?: string;
     groupColor?: Derivable<Color3>;
     groupTransparency?: Derivable<number>;
+    visible?: Derivable<boolean>;
     anchor?: Derivable<Vector2>;
     position?: Derivable<UDim2>;
     size?: Derivable<UDim2>;

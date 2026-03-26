@@ -4,6 +4,7 @@ type FadeProps = {
 	name?: string;
 	groupColor?: Derivable<Color3>;
 	groupTransparency?: Derivable<number>;
+	visible?: Derivable<boolean>;
 	anchor?: Derivable<Vector2>;
 	position?: Derivable<UDim2>;
 	size?: Derivable<UDim2>;
@@ -45,6 +46,8 @@ export default function FadeComponent(props: FadeProps) {
 			Rotation={props.rotation}
 			LayoutOrder={props.layoutOrder}
 			ZIndex={props.zIndex}
+			Visible={props.visible}
+			Interactable={props.visible}
 			Parent={props.parent}
 			{...props.events}
 		>

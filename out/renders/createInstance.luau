@@ -71,11 +71,15 @@ local function createInstance(props, name, group, childContainers, Loaded)
 	local container
 	if entry.fade then
 		local source = getAppSource(name, group)
+		local transparencySpring = spring(function()
+			return if source() then 0 else 1
+		end, entry.fade.period, entry.fade.dampeningRatio)
 		container = (Vide.jsx(FadeComponent, {
 			name = `{group}_{name}_Container`,
-			groupTransparency = (spring(function()
-				return if source() then 0 else 1
-			end, entry.fade.period, entry.fade.dampeningRatio)),
+			groupTransparency = transparencySpring,
+			visible = function()
+				return transparencySpring() < 0.99
+			end,
 			anchor = Vector2.new(0.5, 0.5),
 			position = UDim2.fromScale(0.5, 0.5),
 			size = UDim2.fromScale(1, 1),

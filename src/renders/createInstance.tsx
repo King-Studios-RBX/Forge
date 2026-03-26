@@ -70,12 +70,16 @@ export default function createInstance(
 
 	if (entry.fade) {
 		const source = getAppSource(name, group);
+		const [transparencySpring] = spring(
+			() => (source() ? 0 : 1),
+			entry.fade.period,
+			entry.fade.dampeningRatio,
+		);
 		container = (
 			<FadeComponent
 				name={`${group}_${name}_Container`}
-				groupTransparency={
-					spring(() => (source() ? 0 : 1), entry.fade.period, entry.fade.dampeningRatio)[0]
-				}
+				groupTransparency={transparencySpring}
+				visible={() => transparencySpring() < 0.99}
 				anchor={new Vector2(0.5, 0.5)}
 				position={UDim2.fromScale(0.5, 0.5)}
 				size={UDim2.fromScale(1, 1)}
