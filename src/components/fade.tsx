@@ -46,8 +46,6 @@ export default function FadeComponent(props: FadeProps) {
 			Rotation={props.rotation}
 			LayoutOrder={props.layoutOrder}
 			ZIndex={props.zIndex}
-			Visible={props.visible}
-			Interactable={props.visible}
 			Parent={props.parent}
 			{...props.events}
 		>

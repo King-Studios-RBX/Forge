@@ -79,7 +79,6 @@ export default function createInstance(
 			<FadeComponent
 				name={`${group}_${name}_Container`}
 				groupTransparency={transparencySpring}
-				visible={() => transparencySpring() < 0.99}
 				anchor={new Vector2(0.5, 0.5)}
 				position={UDim2.fromScale(0.5, 0.5)}
 				size={UDim2.fromScale(1, 1)}

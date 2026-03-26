@@ -77,9 +77,6 @@ local function createInstance(props, name, group, childContainers, Loaded)
 		container = (Vide.jsx(FadeComponent, {
 			name = `{group}_{name}_Container`,
 			groupTransparency = transparencySpring,
-			visible = function()
-				return transparencySpring() < 0.99
-			end,
 			anchor = Vector2.new(0.5, 0.5),
 			position = UDim2.fromScale(0.5, 0.5),
 			size = UDim2.fromScale(1, 1),
