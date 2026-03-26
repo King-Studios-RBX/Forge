@@ -29,7 +29,14 @@ export default function ParentRule(forge: AppForge, name: AppNames, group: AppGr
 		const parentKey = `${parentName}:${parentGroup}`;
 		const parentVisible = getAppSource(parentName, parentGroup)();
 
-		if (!parentVisible && !closingParents.has(parentKey)) cache.set(key, isVisible);
+		if (!parentVisible && !closingParents.has(parentKey)) {
+			// Only cache if we don't already have a saved state from the parent's close pass.
+			// The parent's close flow (lines 44-48) captures the correct pre-close state.
+			// Without this guard, the child's deferred effect would overwrite with false.
+			if (!cache.has(key)) {
+				cache.set(key, isVisible);
+			}
+		}
 	} else {
 		if (!isVisible) {
 			if (closingParents.has(key) || cachedOnClose.has(key)) return;
@@ -73,7 +80,12 @@ export default function ParentRule(forge: AppForge, name: AppNames, group: AppGr
 					const childKey = `${childEntry.name}:${childGroup}`;
 					const cached = cache.get(childKey);
 
-					forge.set(childEntry.name, childGroup, cached ?? false);
+					// If no cached state exists (e.g. during initialization),
+					// keep the child's current visibility instead of defaulting to false
+					if (cached !== undefined) {
+						forge.set(childEntry.name, childGroup, cached);
+						cache.delete(childKey); // Clear after restoring
+					}
 				});
 			});
 		}

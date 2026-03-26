@@ -7,7 +7,8 @@
 	"packageManager": "bun@1.3.1",
 	"scripts": {
 		"compile": "rbxtsc && node -e \"const fs=require('fs');const f='out/index.d.ts';fs.writeFileSync(f,'/// <reference path=\\\"./types/global.d.ts\\\" />\\n'+fs.readFileSync(f,'utf8'))\"",
-		"compile-all": "bunx run compile && rm -rf test/node_modules/@rbxts/forge && cp -r out test/node_modules/@rbxts/forge"
+		"compile-all": "bunx run compile && rm -rf test/node_modules/@rbxts/forge && cp -r out test/node_modules/@rbxts/forge",
+		"test": "cd test && bun test --tsconfig-override tsconfig.bun.json --preload ./shims/setup.ts"
 	},
 	"keywords": [
 		"roblox-ts",
@@ -43,6 +44,7 @@
 		"@biomejs/biome": "^2.4.6",
 		"@rbxts/types": "^1.0.911",
 		"roblox-ts": "3.0.0",
-		"typescript": "^5.9.3"
+		"typescript": "^5.9.3",
+		"@types/bun": "latest"
 	}
 }

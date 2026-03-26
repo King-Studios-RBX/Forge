@@ -29,7 +29,12 @@ local function ParentRule(forge, name, group)
 		local parentKey = `{parentName}:{parentGroup}`
 		local parentVisible = getAppSource(parentName, parentGroup)()
 		if not parentVisible and not (closingParents[parentKey] ~= nil) then
-			cache[key] = isVisible
+			-- Only cache if we don't already have a saved state from the parent's close pass.
+			-- The parent's close flow (lines 44-48) captures the correct pre-close state.
+			-- Without this guard, the child's deferred effect would overwrite with false.
+			if not (cache[key] ~= nil) then
+				cache[key] = isVisible
+			end
 		end
 	else
 		if not isVisible then
@@ -120,14 +125,12 @@ local function ParentRule(forge, name, group)
 					end
 					local childKey = `{childEntry.name}:{childGroup}`
 					local cached = cache[childKey]
-					local _forge = forge
-					local _exp = childEntry.name
-					local _exp_1 = childGroup
-					local _condition_1 = cached
-					if _condition_1 == nil then
-						_condition_1 = false
+					-- If no cached state exists (e.g. during initialization),
+					-- keep the child's current visibility instead of defaulting to false
+					if cached ~= nil then
+						forge:set(childEntry.name, childGroup, cached)
+						cache[childKey] = nil
 					end
-					_forge:set(_exp, _exp_1, _condition_1)
 				end
 				for _k, _v in entryMap do
 					_callback_1(_v, _k, entryMap)
