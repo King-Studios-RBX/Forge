@@ -1,5 +1,10 @@
 {
+		"typeRoots": [
+			"node_modules/@rbxts",
+			"src/shared/types"
+		],
 	"compilerOptions": {
+		
 		"target": "ESNext",
 		"module": "CommonJS",
 		"moduleResolution": "Node",
