@@ -27,13 +27,18 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || github.token }}
 
+      - name: Configure npm auth
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_PACKAGES_TOKEN || github.token }}" > .npmrc
+          echo "@king-studios-rbx:registry=https://npm.pkg.github.com" >> .npmrc
+
+      - name: Prepare next version
+        run: bun run version:next
+
       - name: Build package
         run: bun run compile
 
       - name: Publish
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ github.token }}" > .npmrc
-          echo "@king-studios-rbx:registry=https://npm.pkg.github.com" >> .npmrc
-          npm publish
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || github.token }}

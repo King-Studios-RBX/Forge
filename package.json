@@ -8,6 +8,7 @@
 	"scripts": {
 		"compile": "rbxtsc && node -e \"const fs=require('fs');const f='out/index.d.ts';fs.writeFileSync(f,'/// <reference path=\\\"./types/global.d.ts\\\" />\\n'+fs.readFileSync(f,'utf8'))\"",
 		"compile-all": "bunx run compile && rm -rf test/node_modules/@rbxts/forge && cp -r out test/node_modules/@rbxts/forge",
+		"version:next": "node scripts/release/prepare-publish-version.cjs",
 		"test": "cd test && bun test --tsconfig-override tsconfig.bun.json --preload ./shims/setup.ts"
 	},
 	"keywords": [
