@@ -30,6 +30,7 @@ export default function App<N extends AppNames>(props: Types.Decorator.AppProps<
 			name: props.name,
 			group: props.group,
 			visible: props.visible,
+			zIndex: props.zIndex,
 			rules: props.rules,
 			fade: fadeConfig,
 		} as Types.Decorator.Entry<N>);

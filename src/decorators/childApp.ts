@@ -28,6 +28,7 @@ export default function ChildApp<N extends AppNames>(props: Types.Decorator.Chil
 			name: props.name,
 			group: props.group,
 			visible: props.visible,
+			zIndex: props.zIndex,
 			rules: props.rules,
 		} as Types.Decorator.ChildEntry<N>);
 
