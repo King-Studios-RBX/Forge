@@ -37,6 +37,7 @@ local function ChildApp(props)
 			name = props.name,
 			group = props.group,
 			visible = props.visible,
+			zIndex = props.zIndex,
 			rules = props.rules,
 		}
 		_exp[groupKey] = _arg1

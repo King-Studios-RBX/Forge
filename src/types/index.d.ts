@@ -65,6 +65,11 @@ declare namespace Types {
 			parent: P;
 			parentGroup?: AppGroups;
 			anchor?: boolean;
+			/**
+			 * When true, app keeps parent metadata but is rendered/root-managed independently
+			 * and is not auto-closed/restored by ParentRule.
+			 */
+			detached?: boolean;
 		};
 
 		export type App = {

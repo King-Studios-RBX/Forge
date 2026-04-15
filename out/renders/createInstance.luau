@@ -29,22 +29,24 @@ local function createInstance(props, name, group, childContainers, Loaded)
 		entryInstance = Logger.time("Renders", `{group}:{name}`, function()
 			return entry.constructor.new(entry, props):render()
 		end)
-		local _condition = entry.rules.parentGroup
-		if _condition == nil then
-			_condition = "None"
-		end
-		local parentGroup = _condition
-		local _loaded = Loaded
-		local _parent = entry.rules.parent
-		local parentMap = _loaded[_parent]
-		if parentMap then
-			local parentEntry = parentMap[parentGroup]
-			if parentEntry then
-				parentContainer = parentEntry.container
+		if not entry.rules.detached then
+			local _condition = entry.rules.parentGroup
+			if _condition == nil then
+				_condition = "None"
 			end
-		end
-		if entry.rules.anchor then
-			anchor = createAnchor(entry, props, entryInstance, Loaded)
+			local parentGroup = _condition
+			local _loaded = Loaded
+			local _parent = entry.rules.parent
+			local parentMap = _loaded[_parent]
+			if parentMap then
+				local parentEntry = parentMap[parentGroup]
+				if parentEntry then
+					parentContainer = parentEntry.container
+				end
+			end
+			if entry.rules.anchor then
+				anchor = createAnchor(entry, props, entryInstance, Loaded)
+			end
 		end
 	else
 		-- Time the root app render

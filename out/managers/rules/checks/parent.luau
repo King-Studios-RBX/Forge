@@ -20,6 +20,10 @@ local function ParentRule(forge, name, group)
 	local isVisible = getAppSource(name, group)()
 	local key = `{name}:{group}`
 	if isChildEntry(entry) then
+		if entry.rules.detached then
+			cache[key] = nil
+			return nil
+		end
 		local parentName = entry.rules.parent
 		local _condition = entry.rules.parentGroup
 		if _condition == nil then
@@ -47,6 +51,9 @@ local function ParentRule(forge, name, group)
 				-- ▼ ReadonlyMap.forEach ▼
 				local _callback_1 = function(childEntry, childGroup)
 					if not isChildEntry(childEntry) then
+						return nil
+					end
+					if childEntry.rules.detached then
 						return nil
 					end
 					if childEntry.rules.parent ~= name then
@@ -81,6 +88,9 @@ local function ParentRule(forge, name, group)
 						if not isChildEntry(childEntry) then
 							return nil
 						end
+						if childEntry.rules.detached then
+							return nil
+						end
 						if childEntry.rules.parent ~= name then
 							return nil
 						end
@@ -111,6 +121,9 @@ local function ParentRule(forge, name, group)
 				-- ▼ ReadonlyMap.forEach ▼
 				local _callback_1 = function(childEntry, childGroup)
 					if not isChildEntry(childEntry) then
+						return nil
+					end
+					if childEntry.rules.detached then
 						return nil
 					end
 					if childEntry.rules.parent ~= name then

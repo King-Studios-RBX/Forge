@@ -24,6 +24,11 @@ export default function ParentRule(forge: AppForge, name: AppNames, group: AppGr
 	const key = `${name}:${group}`;
 
 	if (isChildEntry(entry)) {
+		if (entry.rules.detached) {
+			cache.delete(key);
+			return;
+		}
+
 		const parentName = entry.rules.parent;
 		const parentGroup = entry.rules.parentGroup ?? "None";
 		const parentKey = `${parentName}:${parentGroup}`;
@@ -45,6 +50,7 @@ export default function ParentRule(forge: AppForge, name: AppNames, group: AppGr
 			AppRegistry.forEach((entryMap) => {
 				entryMap.forEach((childEntry, childGroup) => {
 					if (!isChildEntry(childEntry)) return;
+					if (childEntry.rules.detached) return;
 					if (childEntry.rules.parent !== name) return;
 					if ((childEntry.rules.parentGroup ?? "None") !== group) return;
 
@@ -60,6 +66,7 @@ export default function ParentRule(forge: AppForge, name: AppNames, group: AppGr
 				AppRegistry.forEach((entryMap) => {
 					entryMap.forEach((childEntry, childGroup) => {
 						if (!isChildEntry(childEntry)) return;
+						if (childEntry.rules.detached) return;
 						if (childEntry.rules.parent !== name) return;
 						if ((childEntry.rules.parentGroup ?? "None") !== group) return;
 
@@ -74,6 +81,7 @@ export default function ParentRule(forge: AppForge, name: AppNames, group: AppGr
 			AppRegistry.forEach((entryMap) => {
 				entryMap.forEach((childEntry, childGroup) => {
 					if (!isChildEntry(childEntry)) return;
+					if (childEntry.rules.detached) return;
 					if (childEntry.rules.parent !== name) return;
 					if ((childEntry.rules.parentGroup ?? "None") !== group) return;
 

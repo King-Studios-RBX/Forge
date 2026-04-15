@@ -43,15 +43,17 @@ export default function createInstance(
 			() => new entry.constructor(entry as never, props).render() as Instance,
 		);
 
-		const parentGroup = entry.rules.parentGroup ?? "None";
-		const parentMap = Loaded.get(entry.rules.parent);
-		if (parentMap) {
-			const parentEntry = parentMap.get(parentGroup);
-			if (parentEntry) parentContainer = parentEntry.container;
-		}
+		if (!entry.rules.detached) {
+			const parentGroup = entry.rules.parentGroup ?? "None";
+			const parentMap = Loaded.get(entry.rules.parent);
+			if (parentMap) {
+				const parentEntry = parentMap.get(parentGroup);
+				if (parentEntry) parentContainer = parentEntry.container;
+			}
 
-		if (entry.rules.anchor) {
-			anchor = createAnchor(entry, props, entryInstance, Loaded);
+			if (entry.rules.anchor) {
+				anchor = createAnchor(entry, props, entryInstance, Loaded);
+			}
 		}
 	} else {
 		// Time the root app render

@@ -157,6 +157,9 @@ do
 					if not isChildEntry(childEntry) then
 						return nil
 					end
+					if childEntry.rules.detached then
+						return nil
+					end
 					if childEntry.rules.parent ~= name then
 						return nil
 					end
@@ -186,11 +189,12 @@ do
 			if not render then
 				return nil
 			end
-			local _result_4 = getAppEntry(name, group)
-			if _result_4 ~= nil then
-				_result_4 = _result_4.rules
+			local _rules = getAppEntry(name, group)
+			if _rules ~= nil then
+				_rules = _rules.rules
 			end
-			if not isChildAppRules(_result_4) then
+			local rules = _rules
+			if not isChildAppRules(rules) or rules.detached then
 				local _container = render.container
 				table.insert(load, _container)
 			end
@@ -200,7 +204,7 @@ do
 		local _callback = function(groupEntries, appName)
 			-- ▼ ReadonlyMap.forEach ▼
 			local _callback_1 = function(entry, group)
-				if isChildEntry(entry) then
+				if isChildEntry(entry) and not entry.rules.detached then
 					return nil
 				end
 				local _condition = names

@@ -78,6 +78,7 @@ export default class Renders extends Rules {
 			AppRegistry.forEach((groupEntries) => {
 				groupEntries.forEach((childEntry, childGroup) => {
 					if (!isChildEntry(childEntry)) return;
+					if (childEntry.rules.detached) return;
 					if (childEntry.rules.parent !== name) return;
 					const childParentGroup = childEntry.rules.parentGroup ?? "None";
 					if (childParentGroup !== group) return;
@@ -89,7 +90,8 @@ export default class Renders extends Rules {
 			const render = createInstance(props, name, group, childContainers, this.Loaded);
 			if (!render) return;
 
-			if (!isChildAppRules(getAppEntry(name, group)?.rules)) {
+			const rules = getAppEntry(name, group)?.rules;
+			if (!isChildAppRules(rules) || rules.detached) {
 				load.push(render.container);
 			}
 
@@ -98,7 +100,7 @@ export default class Renders extends Rules {
 
 		AppRegistry.forEach((groupEntries, appName) => {
 			groupEntries.forEach((entry, group) => {
-				if (isChildEntry(entry)) return;
+				if (isChildEntry(entry) && !entry.rules.detached) return;
 				if (names && !names.has(appName)) return;
 				if (groups && !groups.has(group)) return;
 				renderEntry(appName, group);
