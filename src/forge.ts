@@ -39,7 +39,20 @@ export class AppForge extends Renders {
 	}
 
 	public get(name: AppNames, group: AppGroups = "None") {
-		return AppDisplaySources.get(name)?.get(group) ?? AppSources.get(name)?.get(group);
+		const source = AppSources.get(name)?.get(group);
+		if (!source) return;
+
+		const displaySource = AppDisplaySources.get(name)?.get(group);
+		if (!displaySource) return source;
+
+		return ((value?: boolean) => {
+			if (typeIs(value, "boolean")) {
+				source(value);
+				return value;
+			}
+
+			return displaySource();
+		}) as Vide.Source<boolean>;
 	}
 	public open(name: AppNames, group: AppGroups = "None") {
 		this.set(name, group, true);

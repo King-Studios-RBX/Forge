@@ -115,22 +115,33 @@ do
 			group = "None"
 		end
 		local _name = name
-		local _result = AppDisplaySources[_name]
-		if _result ~= nil then
+		local _source = AppSources[_name]
+		if _source ~= nil then
 			local _group = group
-			_result = _result[_group]
+			_source = _source[_group]
 		end
-		local _condition = _result
-		if _condition == nil then
-			local _name_1 = name
-			local _result_1 = AppSources[_name_1]
-			if _result_1 ~= nil then
-				local _group = group
-				_result_1 = _result_1[_group]
+		local source = _source
+		if not source then
+			return nil
+		end
+		local _name_1 = name
+		local _displaySource = AppDisplaySources[_name_1]
+		if _displaySource ~= nil then
+			local _group = group
+			_displaySource = _displaySource[_group]
+		end
+		local displaySource = _displaySource
+		if not displaySource then
+			return source
+		end
+		return function(value)
+			local _value = value
+			if type(_value) == "boolean" then
+				source(value)
+				return value
 			end
-			_condition = _result_1
+			return displaySource()
 		end
-		return _condition
 	end
 	function AppForge:open(name, group)
 		if group == nil then
