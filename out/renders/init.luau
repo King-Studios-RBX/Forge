@@ -2,6 +2,7 @@
 local TS = _G[script]
 -- Services
 local Workspace = TS.import(script, TS.getModule(script, "@rbxts", "services")).Workspace
+-- Packages
 -- Types
 -- Components
 local AppRegistry = TS.import(script, script.Parent, "registries", "apps").AppRegistry
@@ -13,6 +14,7 @@ local Rules = TS.import(script, script.Parent, "managers", "rules").default
 local isChildAppRules = TS.import(script, script.Parent, "helpers", "isChildAppRules").default
 local isChildEntry = TS.import(script, script.Parent, "helpers", "isChildEntry").default
 local getAppEntry = TS.import(script, script.Parent, "helpers", "getAppEntry").default
+local getAppSource = TS.import(script, script.Parent, "helpers", "getAppSource").default
 local hasAppSource = TS.import(script, script.Parent, "helpers", "hasAppSource").default
 local setAppSource = TS.import(script, script.Parent, "helpers", "setAppSource").default
 -- Renders
@@ -72,51 +74,48 @@ do
 	end
 	function Renders:Load(props)
 		local renders = props.renders
-		local _result = renders
+		local _result = props.config
 		if _result ~= nil then
-			_result = _result.name
-		end
-		local _result_1
-		if _result ~= nil then
-			_result_1 = {
-				[renders.name] = true,
-			}
-		else
-			local _result_2 = renders
-			if _result_2 ~= nil then
-				_result_2 = _result_2.names
+			_result = _result.render
+			if _result ~= nil then
+				_result = _result.mountWhenVisible
 			end
-			local _result_3
-			if _result_2 ~= nil then
-				local _set = {}
-				for _, _v in renders.names do
-					_set[_v] = true
-				end
-				_result_3 = _set
-			else
-				_result_3 = nil
-			end
-			_result_1 = _result_3
 		end
-		local names = _result_1
+		local _condition = _result
+		if _condition == nil then
+			_condition = false
+		end
+		local mountWhenVisible = _condition
+		local _result_1 = props.config
+		if _result_1 ~= nil then
+			_result_1 = _result_1.render
+			if _result_1 ~= nil then
+				_result_1 = _result_1.unmountOnHide
+			end
+		end
+		local _condition_1 = _result_1
+		if _condition_1 == nil then
+			_condition_1 = true
+		end
+		local unmountOnHide = _condition_1
 		local _result_2 = renders
 		if _result_2 ~= nil then
-			_result_2 = _result_2.group
+			_result_2 = _result_2.name
 		end
 		local _result_3
 		if _result_2 ~= nil then
 			_result_3 = {
-				[renders.group] = true,
+				[renders.name] = true,
 			}
 		else
 			local _result_4 = renders
 			if _result_4 ~= nil then
-				_result_4 = _result_4.groups
+				_result_4 = _result_4.names
 			end
 			local _result_5
 			if _result_4 ~= nil then
 				local _set = {}
-				for _, _v in renders.groups do
+				for _, _v in renders.names do
 					_set[_v] = true
 				end
 				_result_5 = _set
@@ -125,11 +124,60 @@ do
 			end
 			_result_3 = _result_5
 		end
-		local groups = _result_3
+		local names = _result_3
+		local _result_4 = renders
+		if _result_4 ~= nil then
+			_result_4 = _result_4.group
+		end
+		local _result_5
+		if _result_4 ~= nil then
+			_result_5 = {
+				[renders.group] = true,
+			}
+		else
+			local _result_6 = renders
+			if _result_6 ~= nil then
+				_result_6 = _result_6.groups
+			end
+			local _result_7
+			if _result_6 ~= nil then
+				local _set = {}
+				for _, _v in renders.groups do
+					_set[_v] = true
+				end
+				_result_7 = _set
+			else
+				_result_7 = nil
+			end
+			_result_5 = _result_7
+		end
+		local groups = _result_5
 		local load = {}
 		local rendered = {}
 		-- Time the entire load pass
 		local start = os.clock()
+		local removeLoadedRender = function(name, group, render)
+			render.container:Destroy()
+			local _loaded = self.Loaded
+			local _name = name
+			local entryMap = _loaded[_name]
+			if not entryMap then
+				return nil
+			end
+			local _group = group
+			entryMap[_group] = nil
+			-- ▼ ReadonlyMap.size ▼
+			local _size = 0
+			for _ in entryMap do
+				_size += 1
+			end
+			-- ▲ ReadonlyMap.size ▲
+			if _size == 0 then
+				local _loaded_1 = self.Loaded
+				local _name_1 = name
+				_loaded_1[_name_1] = nil
+			end
+		end
 		local renderEntry
 		renderEntry = function(name, group)
 			local key = `{name}:{group}`
@@ -137,16 +185,20 @@ do
 				return nil
 			end
 			rendered[key] = true
+			local entry = getAppEntry(name, group)
+			if not entry then
+				return nil
+			end
+			local shouldPushToRoot = not isChildAppRules(entry.rules) or entry.rules.detached
 			-- Create source for this app if it doesn't exist yet
 			if not hasAppSource(name, group) then
-				local entry = getAppEntry(name, group)
 				local _exp = name
 				local _exp_1 = group
-				local _condition = entry.visible
-				if _condition == nil then
-					_condition = false
+				local _condition_2 = entry.visible
+				if _condition_2 == nil then
+					_condition_2 = false
 				end
-				setAppSource(_exp, _exp_1, _condition)
+				setAppSource(_exp, _exp_1, _condition_2)
 			end
 			-- Collect all direct child containers before building this container
 			local childContainers = {}
@@ -163,11 +215,11 @@ do
 					if childEntry.rules.parent ~= name then
 						return nil
 					end
-					local _condition = childEntry.rules.parentGroup
-					if _condition == nil then
-						_condition = "None"
+					local _condition_2 = childEntry.rules.parentGroup
+					if _condition_2 == nil then
+						_condition_2 = "None"
 					end
-					local childParentGroup = _condition
+					local childParentGroup = _condition_2
 					if childParentGroup ~= group then
 						return nil
 					end
@@ -185,20 +237,39 @@ do
 				_callback(_v, _k, AppRegistry)
 			end
 			-- ▲ ReadonlyMap.forEach ▲
-			local render = createInstance(props, name, group, childContainers, self.Loaded)
-			if not render then
-				return nil
+			if not mountWhenVisible then
+				local render = createInstance(props, name, group, childContainers, self.Loaded)
+				if not render then
+					return nil
+				end
+				if shouldPushToRoot then
+					local _container = render.container
+					table.insert(load, _container)
+				end
+				return render.container
 			end
-			local _rules = getAppEntry(name, group)
-			if _rules ~= nil then
-				_rules = _rules.rules
+			local activeRender
+			local node = function()
+				if not getAppSource(name, group)() then
+					if activeRender and unmountOnHide then
+						removeLoadedRender(name, group, activeRender)
+						activeRender = nil
+					end
+					return nil
+				end
+				if not activeRender then
+					activeRender = createInstance(props, name, group, childContainers, self.Loaded)
+				end
+				local _result_6 = activeRender
+				if _result_6 ~= nil then
+					_result_6 = _result_6.container
+				end
+				return _result_6
 			end
-			local rules = _rules
-			if not isChildAppRules(rules) or rules.detached then
-				local _container = render.container
-				table.insert(load, _container)
+			if shouldPushToRoot then
+				table.insert(load, node)
 			end
-			return render.container
+			return node
 		end
 		-- ▼ ReadonlyMap.forEach ▼
 		local _callback = function(groupEntries, appName)
@@ -207,20 +278,20 @@ do
 				if isChildEntry(entry) and not entry.rules.detached then
 					return nil
 				end
-				local _condition = names
-				if _condition then
+				local _condition_2 = names
+				if _condition_2 then
 					local _appName = appName
-					_condition = not (names[_appName] ~= nil)
+					_condition_2 = not (names[_appName] ~= nil)
 				end
-				if _condition then
+				if _condition_2 then
 					return nil
 				end
-				local _condition_1 = groups
-				if _condition_1 then
+				local _condition_3 = groups
+				if _condition_3 then
 					local _group = group
-					_condition_1 = not (groups[_group] ~= nil)
+					_condition_3 = not (groups[_group] ~= nil)
 				end
-				if _condition_1 then
+				if _condition_3 then
 					return nil
 				end
 				renderEntry(appName, group)
@@ -242,7 +313,7 @@ do
 			_size += 1
 		end
 		-- ▲ ReadonlySet.size ▲
-		Logger.debug("Renders", `Load completed in {_exp}s — {_size} app(s) rendered`)
+		Logger.debug("Renders", `Load completed in {_exp}s — {_size} app node(s) prepared`)
 		return load
 	end
 end

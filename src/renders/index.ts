@@ -14,6 +14,7 @@ import Rules from "@managers/rules";
 import isChildAppRules from "@helpers/isChildAppRules";
 import isChildEntry from "@helpers/isChildEntry";
 import getAppEntry from "@helpers/getAppEntry";
+import getAppSource from "@helpers/getAppSource";
 import hasAppSource from "@helpers/hasAppSource";
 import setAppSource from "@helpers/setAppSource";
 // Renders
@@ -60,7 +61,7 @@ export default class Renders extends Rules {
 					? new Set(renders.groups)
 					: undefined;
 
-		const load: Vide.Node[] = [];
+		const load: Exclude<Vide.Node, undefined>[] = [];
 		const rendered = new Set<string>();
 
 		// Time the entire load pass
@@ -76,7 +77,7 @@ export default class Renders extends Rules {
 			}
 		};
 
-		const renderEntry = (name: AppNames, group: AppGroups): Vide.Node | undefined => {
+		const renderEntry = (name: AppNames, group: AppGroups): Exclude<Vide.Node, undefined> | undefined => {
 			const key = `${name}:${group}`;
 			if (rendered.has(key)) return;
 			rendered.add(key);
@@ -91,7 +92,7 @@ export default class Renders extends Rules {
 			}
 
 			// Collect all direct child containers before building this container
-			const childContainers: Vide.Node[] = [];
+			const childContainers: Exclude<Vide.Node, undefined>[] = [];
 			AppRegistry.forEach((groupEntries) => {
 				groupEntries.forEach((childEntry, childGroup) => {
 					if (!isChildEntry(childEntry)) return;

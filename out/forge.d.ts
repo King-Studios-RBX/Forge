@@ -17,5 +17,5 @@ export declare class AppForge extends Renders {
     }) => Frame;
     render: ({ props }: {
         props: Omit<Types.Props.Main, "forge">;
-    }) => Instance[];
+    }) => (Instance | Vide.InstanceAttributes<Instance> | Vide.Action<any> | Vide.FragmentNode | Vide.FunctionNode)[];
 }

@@ -102,12 +102,18 @@ local function createInstance(props, name, group, childContainers, Loaded)
 		entry = entry,
 		anchor = anchor,
 	}
-	local newMap = {}
-	local _group = group
-	newMap[_group] = render
 	local _loaded = Loaded
 	local _name = name
-	_loaded[_name] = newMap
+	local _condition = _loaded[_name]
+	if _condition == nil then
+		_condition = {}
+	end
+	local entryMap = _condition
+	local _group = group
+	entryMap[_group] = render
+	local _loaded_1 = Loaded
+	local _name_1 = name
+	_loaded_1[_name_1] = entryMap
 	return render
 end
 return {

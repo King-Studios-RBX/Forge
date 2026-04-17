@@ -25,7 +25,7 @@ export default function createInstance(
 	props: Types.Props.Main,
 	name: AppNames,
 	group: AppGroups,
-	childContainers: Vide.Node[],
+	childContainers: Exclude<Vide.Node, undefined>[],
 	Loaded: Map<AppNames, Map<AppGroups, Render>>,
 ): Render | undefined {
 	const entry = getAppEntry(name, group);
