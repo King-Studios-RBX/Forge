@@ -4,6 +4,7 @@ local TS = _G[script]
 local Workspace = TS.import(script, TS.getModule(script, "@rbxts", "services")).Workspace
 -- Packages
 local _vide = TS.import(script, TS.getModule(script, "@rbxts", "vide").src)
+local cleanup = _vide.cleanup
 local show = _vide.show
 local source = _vide.source
 -- Types
@@ -103,60 +104,72 @@ do
 			_condition_1 = true
 		end
 		local unmountOnHide = _condition_1
-		local _result_2 = renders
+		local _result_2 = props.config
 		if _result_2 ~= nil then
-			_result_2 = _result_2.name
+			_result_2 = _result_2.render
+			if _result_2 ~= nil then
+				_result_2 = _result_2.unmountDelay
+			end
 		end
-		local _result_3
-		if _result_2 ~= nil then
-			_result_3 = {
+		local _condition_2 = _result_2
+		if _condition_2 == nil then
+			_condition_2 = 0.4
+		end
+		local unmountDelay = _condition_2
+		local _result_3 = renders
+		if _result_3 ~= nil then
+			_result_3 = _result_3.name
+		end
+		local _result_4
+		if _result_3 ~= nil then
+			_result_4 = {
 				[renders.name] = true,
 			}
 		else
-			local _result_4 = renders
-			if _result_4 ~= nil then
-				_result_4 = _result_4.names
+			local _result_5 = renders
+			if _result_5 ~= nil then
+				_result_5 = _result_5.names
 			end
-			local _result_5
-			if _result_4 ~= nil then
+			local _result_6
+			if _result_5 ~= nil then
 				local _set = {}
 				for _, _v in renders.names do
 					_set[_v] = true
 				end
-				_result_5 = _set
+				_result_6 = _set
 			else
-				_result_5 = nil
+				_result_6 = nil
 			end
-			_result_3 = _result_5
+			_result_4 = _result_6
 		end
-		local names = _result_3
-		local _result_4 = renders
-		if _result_4 ~= nil then
-			_result_4 = _result_4.group
+		local names = _result_4
+		local _result_5 = renders
+		if _result_5 ~= nil then
+			_result_5 = _result_5.group
 		end
-		local _result_5
-		if _result_4 ~= nil then
-			_result_5 = {
+		local _result_6
+		if _result_5 ~= nil then
+			_result_6 = {
 				[renders.group] = true,
 			}
 		else
-			local _result_6 = renders
-			if _result_6 ~= nil then
-				_result_6 = _result_6.groups
+			local _result_7 = renders
+			if _result_7 ~= nil then
+				_result_7 = _result_7.groups
 			end
-			local _result_7
-			if _result_6 ~= nil then
+			local _result_8
+			if _result_7 ~= nil then
 				local _set = {}
 				for _, _v in renders.groups do
 					_set[_v] = true
 				end
-				_result_7 = _set
+				_result_8 = _set
 			else
-				_result_7 = nil
+				_result_8 = nil
 			end
-			_result_5 = _result_7
+			_result_6 = _result_8
 		end
-		local groups = _result_5
+		local groups = _result_6
 		local load = {}
 		local rendered = {}
 		-- Time the entire load pass
@@ -185,11 +198,11 @@ do
 		end
 		local setDisplaySource = function(name, group, visibilitySource)
 			local _name = name
-			local _condition_2 = AppDisplaySources[_name]
-			if _condition_2 == nil then
-				_condition_2 = {}
+			local _condition_3 = AppDisplaySources[_name]
+			if _condition_3 == nil then
+				_condition_3 = {}
 			end
-			local sourceMap = _condition_2
+			local sourceMap = _condition_3
 			local _group = group
 			local _visibilitySource = visibilitySource
 			sourceMap[_group] = _visibilitySource
@@ -231,11 +244,11 @@ do
 			if not hasAppSource(name, group) then
 				local _exp = name
 				local _exp_1 = group
-				local _condition_2 = entry.visible
-				if _condition_2 == nil then
-					_condition_2 = false
+				local _condition_3 = entry.visible
+				if _condition_3 == nil then
+					_condition_3 = false
 				end
-				setAppSource(_exp, _exp_1, _condition_2)
+				setAppSource(_exp, _exp_1, _condition_3)
 			end
 			-- Collect all direct child containers before building this container
 			local childContainers = {}
@@ -252,11 +265,11 @@ do
 					if childEntry.rules.parent ~= name then
 						return nil
 					end
-					local _condition_2 = childEntry.rules.parentGroup
-					if _condition_2 == nil then
-						_condition_2 = "None"
+					local _condition_3 = childEntry.rules.parentGroup
+					if _condition_3 == nil then
+						_condition_3 = "None"
 					end
-					local childParentGroup = _condition_2
+					local childParentGroup = _condition_3
 					if childParentGroup ~= group then
 						return nil
 					end
@@ -295,18 +308,21 @@ do
 				if not activeRender then
 					activeRender = createInstance(props, name, group, childContainers, self.Loaded)
 				end
-				local _result_6 = activeRender
-				if _result_6 ~= nil then
-					_result_6 = _result_6.container
+				local render = activeRender
+				if not render then
+					return nil
 				end
-				return _result_6
-			end, function()
-				clearDisplaySource(name, group)
-				if activeRender then
-					removeLoadedRender(name, group, activeRender)
-					activeRender = nil
+				cleanup(function()
+					clearDisplaySource(name, group)
+					removeLoadedRender(name, group, render)
+					if activeRender == render then
+						activeRender = nil
+					end
+				end)
+				if unmountDelay > 0 then
+					return render.container, unmountDelay
 				end
-				return nil
+				return render.container
 			end) else (function()
 				local keepMounted = source(false)
 				return show(function()
@@ -319,11 +335,11 @@ do
 					if activeRender then
 						keepMounted(true)
 					end
-					local _result_6 = activeRender
-					if _result_6 ~= nil then
-						_result_6 = _result_6.container
+					local _result_7 = activeRender
+					if _result_7 ~= nil then
+						_result_7 = _result_7.container
 					end
-					return _result_6
+					return _result_7
 				end)
 			end)()
 			if shouldPushToRoot then
@@ -338,20 +354,20 @@ do
 				if isChildEntry(entry) and not entry.rules.detached then
 					return nil
 				end
-				local _condition_2 = names
-				if _condition_2 then
+				local _condition_3 = names
+				if _condition_3 then
 					local _appName = appName
-					_condition_2 = not (names[_appName] ~= nil)
+					_condition_3 = not (names[_appName] ~= nil)
 				end
-				if _condition_2 then
+				if _condition_3 then
 					return nil
 				end
-				local _condition_3 = groups
-				if _condition_3 then
+				local _condition_4 = groups
+				if _condition_4 then
 					local _group = group
-					_condition_3 = not (groups[_group] ~= nil)
+					_condition_4 = not (groups[_group] ~= nil)
 				end
-				if _condition_3 then
+				if _condition_4 then
 					return nil
 				end
 				renderEntry(appName, group)

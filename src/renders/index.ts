@@ -1,7 +1,7 @@
 // Services
 import { Workspace } from "@rbxts/services";
 // Packages
-import Vide, { show, source } from "@rbxts/vide";
+import Vide, { cleanup, show, source } from "@rbxts/vide";
 // Types
 import type Types from "@root/types";
 // Components
@@ -46,6 +46,7 @@ export default class Renders extends Rules {
 		const renders = props.renders;
 		const mountWhenVisible = props.config?.render?.mountWhenVisible ?? false;
 		const unmountOnHide = props.config?.render?.unmountOnHide ?? true;
+		const unmountDelay = props.config?.render?.unmountDelay ?? 0.4;
 
 		const names =
 			renders?.name !== undefined
@@ -143,16 +144,22 @@ export default class Renders extends Rules {
 								activeRender = createInstance(props, name, group, childContainers, this.Loaded);
 							}
 
-							return activeRender?.container;
-						},
-						() => {
-							clearDisplaySource(name, group);
-							if (activeRender) {
-								removeLoadedRender(name, group, activeRender);
-								activeRender = undefined;
+							const render = activeRender;
+							if (!render) return undefined;
+
+							cleanup(() => {
+								clearDisplaySource(name, group);
+								removeLoadedRender(name, group, render);
+								if (activeRender === render) {
+									activeRender = undefined;
+								}
+							});
+
+							if (unmountDelay > 0) {
+								return $tuple(render.container, unmountDelay);
 							}
 
-							return undefined;
+							return render.container;
 						},
 					)
 				: (() => {

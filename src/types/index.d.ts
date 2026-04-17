@@ -60,6 +60,11 @@ declare namespace Types {
 				 * When true (default), an app container is destroyed again when hidden.
 				 */
 				unmountOnHide?: boolean;
+				/**
+				 * Seconds to keep a hidden app mounted before teardown when unmountOnHide is true.
+				 * This gives fade/spring exit animations time to play. Defaults to 0.4.
+				 */
+				unmountDelay?: number;
 			};
 		};
 
