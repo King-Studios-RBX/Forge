@@ -8,7 +8,9 @@ local show = _vide.show
 local source = _vide.source
 -- Types
 -- Components
-local AppRegistry = TS.import(script, script.Parent, "registries", "apps").AppRegistry
+local _apps = TS.import(script, script.Parent, "registries", "apps")
+local AppDisplaySources = _apps.AppDisplaySources
+local AppRegistry = _apps.AppRegistry
 -- Hooks
 local usePx = TS.import(script, script.Parent, "hooks", "usePx").usePx
 -- Classes
@@ -181,6 +183,38 @@ do
 				_loaded_1[_name_1] = nil
 			end
 		end
+		local setDisplaySource = function(name, group, visibilitySource)
+			local _name = name
+			local _condition_2 = AppDisplaySources[_name]
+			if _condition_2 == nil then
+				_condition_2 = {}
+			end
+			local sourceMap = _condition_2
+			local _group = group
+			local _visibilitySource = visibilitySource
+			sourceMap[_group] = _visibilitySource
+			local _name_1 = name
+			AppDisplaySources[_name_1] = sourceMap
+		end
+		local clearDisplaySource = function(name, group)
+			local _name = name
+			local sourceMap = AppDisplaySources[_name]
+			if not sourceMap then
+				return nil
+			end
+			local _group = group
+			sourceMap[_group] = nil
+			-- ▼ ReadonlyMap.size ▼
+			local _size = 0
+			for _ in sourceMap do
+				_size += 1
+			end
+			-- ▲ ReadonlyMap.size ▲
+			if _size == 0 then
+				local _name_1 = name
+				AppDisplaySources[_name_1] = nil
+			end
+		end
 		local renderEntry
 		renderEntry = function(name, group)
 			local key = `{name}:{group}`
@@ -241,6 +275,7 @@ do
 			end
 			-- ▲ ReadonlyMap.forEach ▲
 			if not mountWhenVisible then
+				clearDisplaySource(name, group)
 				local render = createInstance(props, name, group, childContainers, self.Loaded)
 				if not render then
 					return nil
@@ -252,9 +287,11 @@ do
 				return render.container
 			end
 			local activeRender
+			local appSource = getAppSource(name, group)
 			local node = if unmountOnHide then show(function()
-				return getAppSource(name, group)()
-			end, function()
+				return appSource()
+			end, function(_, present)
+				setDisplaySource(name, group, present)
 				if not activeRender then
 					activeRender = createInstance(props, name, group, childContainers, self.Loaded)
 				end
@@ -264,6 +301,7 @@ do
 				end
 				return _result_6
 			end, function()
+				clearDisplaySource(name, group)
 				if activeRender then
 					removeLoadedRender(name, group, activeRender)
 					activeRender = nil
@@ -272,8 +310,9 @@ do
 			end) else (function()
 				local keepMounted = source(false)
 				return show(function()
-					return getAppSource(name, group)() or keepMounted()
+					return appSource() or keepMounted()
 				end, function()
+					setDisplaySource(name, group, appSource)
 					if not activeRender then
 						activeRender = createInstance(props, name, group, childContainers, self.Loaded)
 					end

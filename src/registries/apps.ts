@@ -11,3 +11,8 @@ export type AnyAppEntry<N extends AppNames = AppNames> =
 
 export const AppRegistry: RegistryMap<AnyAppEntry> = new Map();
 export const AppSources: RegistryMap<Source<boolean>> = new Map();
+/**
+ * Optional per-app visibility source used for render-time animation state.
+ * Falls back to AppSources when not set.
+ */
+export const AppDisplaySources: RegistryMap<Source<boolean>> = new Map();

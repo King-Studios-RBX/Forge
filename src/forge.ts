@@ -8,7 +8,7 @@ import type Types from "@root/types";
 import Renders from "@root/renders";
 
 // Registries
-import { AppSources } from "@registries/apps";
+import { AppDisplaySources, AppSources } from "@registries/apps";
 
 // Helpers
 import getAppSource from "@helpers/getAppSource";
@@ -39,7 +39,7 @@ export class AppForge extends Renders {
 	}
 
 	public get(name: AppNames, group: AppGroups = "None") {
-		return AppSources.get(name)?.get(group);
+		return AppDisplaySources.get(name)?.get(group) ?? AppSources.get(name)?.get(group);
 	}
 	public open(name: AppNames, group: AppGroups = "None") {
 		this.set(name, group, true);

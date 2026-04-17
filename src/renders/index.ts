@@ -5,7 +5,7 @@ import Vide, { show, source } from "@rbxts/vide";
 // Types
 import type Types from "@root/types";
 // Components
-import { AppRegistry } from "@registries/apps";
+import { AppDisplaySources, AppRegistry } from "@registries/apps";
 // Hooks
 import { usePx } from "@hooks/usePx";
 // Classes
@@ -77,6 +77,21 @@ export default class Renders extends Rules {
 			}
 		};
 
+		const setDisplaySource = (name: AppNames, group: AppGroups, visibilitySource: Vide.Source<boolean>) => {
+			const sourceMap = AppDisplaySources.get(name) ?? new Map<AppGroups, Vide.Source<boolean>>();
+			sourceMap.set(group, visibilitySource);
+			AppDisplaySources.set(name, sourceMap);
+		};
+
+		const clearDisplaySource = (name: AppNames, group: AppGroups) => {
+			const sourceMap = AppDisplaySources.get(name);
+			if (!sourceMap) return;
+			sourceMap.delete(group);
+			if (sourceMap.size() === 0) {
+				AppDisplaySources.delete(name);
+			}
+		};
+
 		const renderEntry = (name: AppNames, group: AppGroups): Exclude<Vide.Node, undefined> | undefined => {
 			const key = `${name}:${group}`;
 			if (rendered.has(key)) return;
@@ -106,6 +121,7 @@ export default class Renders extends Rules {
 			});
 
 			if (!mountWhenVisible) {
+				clearDisplaySource(name, group);
 				const render = createInstance(props, name, group, childContainers, this.Loaded);
 				if (!render) return;
 
@@ -117,10 +133,12 @@ export default class Renders extends Rules {
 			}
 
 			let activeRender: Render | undefined;
+			const appSource = getAppSource(name, group);
 			const node = unmountOnHide
 				? show(
-						() => getAppSource(name, group)(),
-						() => {
+						() => appSource(),
+						(_, present) => {
+							setDisplaySource(name, group, present);
 							if (!activeRender) {
 								activeRender = createInstance(props, name, group, childContainers, this.Loaded);
 							}
@@ -128,6 +146,7 @@ export default class Renders extends Rules {
 							return activeRender?.container;
 						},
 						() => {
+							clearDisplaySource(name, group);
 							if (activeRender) {
 								removeLoadedRender(name, group, activeRender);
 								activeRender = undefined;
@@ -140,8 +159,9 @@ export default class Renders extends Rules {
 						const keepMounted = source(false);
 
 						return show(
-							() => getAppSource(name, group)() || keepMounted(),
+							() => appSource() || keepMounted(),
 							() => {
+								setDisplaySource(name, group, appSource);
 								if (!activeRender) {
 									activeRender = createInstance(props, name, group, childContainers, this.Loaded);
 								}

@@ -9,7 +9,9 @@ local effect = _vide.effect
 -- Classes
 local Renders = TS.import(script, script.Parent, "renders").default
 -- Registries
-local AppSources = TS.import(script, script.Parent, "registries", "apps").AppSources
+local _apps = TS.import(script, script.Parent, "registries", "apps")
+local AppDisplaySources = _apps.AppDisplaySources
+local AppSources = _apps.AppSources
 -- Helpers
 local getAppSource = TS.import(script, script.Parent, "helpers", "getAppSource").default
 local AppForge
@@ -113,12 +115,22 @@ do
 			group = "None"
 		end
 		local _name = name
-		local _result = AppSources[_name]
+		local _result = AppDisplaySources[_name]
 		if _result ~= nil then
 			local _group = group
 			_result = _result[_group]
 		end
-		return _result
+		local _condition = _result
+		if _condition == nil then
+			local _name_1 = name
+			local _result_1 = AppSources[_name_1]
+			if _result_1 ~= nil then
+				local _group = group
+				_result_1 = _result_1[_group]
+			end
+			_condition = _result_1
+		end
+		return _condition
 	end
 	function AppForge:open(name, group)
 		if group == nil then
