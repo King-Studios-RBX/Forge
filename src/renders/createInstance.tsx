@@ -25,7 +25,7 @@ export default function createInstance(
 	props: Types.Props.Main,
 	name: AppNames,
 	group: AppGroups,
-	childContainers: Instance[],
+	childContainers: Vide.Node[],
 	Loaded: Map<AppNames, Map<AppGroups, Render>>,
 ): Render | undefined {
 	const entry = getAppEntry(name, group);
@@ -109,9 +109,9 @@ export default function createInstance(
 	}
 
 	const render: Render = { container, instance: entryInstance, entry, anchor };
-	const newMap = new Map<AppGroups, Render>();
-	newMap.set(group, render);
-	Loaded.set(name, newMap);
+	const entryMap = Loaded.get(name) ?? new Map<AppGroups, Render>();
+	entryMap.set(group, render);
+	Loaded.set(name, entryMap);
 
 	return render;
 }

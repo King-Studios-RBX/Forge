@@ -49,6 +49,18 @@ declare namespace Types {
 				resolution?: Vector2;
 				minScale?: number;
 			};
+			render?: {
+				/**
+				 * When true, app containers are created only while their visibility source is true.
+				 * Hidden apps are not mounted, reducing initial UI memory and instance count.
+				 */
+				mountWhenVisible?: boolean;
+				/**
+				 * Only applies when mountWhenVisible is enabled.
+				 * When true (default), an app container is destroyed again when hidden.
+				 */
+				unmountOnHide?: boolean;
+			};
 		};
 
 		export type Class = AppProps & {
