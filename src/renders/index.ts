@@ -1,7 +1,7 @@
 // Services
 import { Workspace } from "@rbxts/services";
 // Packages
-import type Vide from "@rbxts/vide";
+import Vide, { show, source } from "@rbxts/vide";
 // Types
 import type Types from "@root/types";
 // Components
@@ -117,21 +117,43 @@ export default class Renders extends Rules {
 			}
 
 			let activeRender: Render | undefined;
-			const node = () => {
-				if (!getAppSource(name, group)()) {
-					if (activeRender && unmountOnHide) {
-						removeLoadedRender(name, group, activeRender);
-						activeRender = undefined;
-					}
-					return undefined;
-				}
+			const node = unmountOnHide
+				? show(
+						() => getAppSource(name, group)(),
+						() => {
+							if (!activeRender) {
+								activeRender = createInstance(props, name, group, childContainers, this.Loaded);
+							}
 
-				if (!activeRender) {
-					activeRender = createInstance(props, name, group, childContainers, this.Loaded);
-				}
+							return activeRender?.container;
+						},
+						() => {
+							if (activeRender) {
+								removeLoadedRender(name, group, activeRender);
+								activeRender = undefined;
+							}
 
-				return activeRender?.container;
-			};
+							return undefined;
+						},
+					)
+				: (() => {
+						const keepMounted = source(false);
+
+						return show(
+							() => getAppSource(name, group)() || keepMounted(),
+							() => {
+								if (!activeRender) {
+									activeRender = createInstance(props, name, group, childContainers, this.Loaded);
+								}
+
+								if (activeRender) {
+									keepMounted(true);
+								}
+
+								return activeRender?.container;
+							},
+						);
+					})();
 
 			if (shouldPushToRoot) {
 				load.push(node);

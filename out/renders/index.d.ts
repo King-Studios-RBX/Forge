@@ -1,4 +1,4 @@
-import type Vide from "@rbxts/vide";
+import Vide from "@rbxts/vide";
 import type Types from "../types/index";
 import Rules from "../managers/rules/index";
 import { type Render } from "./createInstance";

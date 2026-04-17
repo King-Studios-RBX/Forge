@@ -3,6 +3,9 @@ local TS = _G[script]
 -- Services
 local Workspace = TS.import(script, TS.getModule(script, "@rbxts", "services")).Workspace
 -- Packages
+local _vide = TS.import(script, TS.getModule(script, "@rbxts", "vide").src)
+local show = _vide.show
+local source = _vide.source
 -- Types
 -- Components
 local AppRegistry = TS.import(script, script.Parent, "registries", "apps").AppRegistry
@@ -249,14 +252,9 @@ do
 				return render.container
 			end
 			local activeRender
-			local node = function()
-				if not getAppSource(name, group)() then
-					if activeRender and unmountOnHide then
-						removeLoadedRender(name, group, activeRender)
-						activeRender = nil
-					end
-					return nil
-				end
+			local node = if unmountOnHide then show(function()
+				return getAppSource(name, group)()
+			end, function()
 				if not activeRender then
 					activeRender = createInstance(props, name, group, childContainers, self.Loaded)
 				end
@@ -265,7 +263,30 @@ do
 					_result_6 = _result_6.container
 				end
 				return _result_6
-			end
+			end, function()
+				if activeRender then
+					removeLoadedRender(name, group, activeRender)
+					activeRender = nil
+				end
+				return nil
+			end) else (function()
+				local keepMounted = source(false)
+				return show(function()
+					return getAppSource(name, group)() or keepMounted()
+				end, function()
+					if not activeRender then
+						activeRender = createInstance(props, name, group, childContainers, self.Loaded)
+					end
+					if activeRender then
+						keepMounted(true)
+					end
+					local _result_6 = activeRender
+					if _result_6 ~= nil then
+						_result_6 = _result_6.container
+					end
+					return _result_6
+				end)
+			end)()
 			if shouldPushToRoot then
 				table.insert(load, node)
 			end
