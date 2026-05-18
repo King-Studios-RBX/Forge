@@ -8,12 +8,6 @@
 			"type": "shell"
 		},
 		{
-			"label": "Compile All",
-			"command": "bun x turbo run compile-all",
-			"group": "build",
-			"type": "shell"
-		},
-		{
 			"label": "Login",
 			"command": "bun run login",
 			"group": "build",
