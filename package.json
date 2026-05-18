@@ -4,7 +4,7 @@
 	"description": "An App Manager for Vide",
 	"main": "out/init.lua",
 	"types": "out/index.d.ts",
-	"packageManager": "bun@1.3.1",
+	"packageManager": "bun@1.3.14",
 	"scripts": {
 		"compile": "rbxtsc && node -e \"const fs=require('fs');const f='out/index.d.ts';fs.writeFileSync(f,'/// <reference path=\\\"./types/global.d.ts\\\" />\\n'+fs.readFileSync(f,'utf8'))\"",
 		"compile-all": "bunx run compile && rm -rf test/node_modules/@rbxts/forge && cp -r out test/node_modules/@rbxts/forge",
@@ -30,22 +30,19 @@
 		"!**/*.spec.lua",
 		"!**/*.spec.d.ts"
 	],
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com"
-	},
 	"dependencies": {
 		"@rbxts/services": "^1.6.0",
 		"@rbxts/set-timeout": "^1.1.2",
-		"concurrently": "^9.2.1",
-		"@rbxts/vide": "*",
-		"turbo": "^2.8.16"
+		"@rbxts/vide": "^0.6.1"
 	},
 	"devDependencies": {
-		"@rbxts/compiler-types": "3.0.0-types.0",
-		"@biomejs/biome": "^2.4.6",
-		"@rbxts/types": "^1.0.911",
-		"roblox-ts": "3.0.0",
+		"turbo": "^2.9.14",
+		"concurrently": "^9.2.1",
+		"@rbxts/compiler-types": "^3.0.0-types.0",
+		"@biomejs/biome": "^2.4.15",
+		"@rbxts/types": "^1.0.920",
+		"roblox-ts": "^3.0.0",
 		"typescript": "^5.9.3",
-		"@types/bun": "latest"
+		"@types/bun": "^1.3.14"
 	}
 }

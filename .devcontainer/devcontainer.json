@@ -1,68 +1,46 @@
 {
-	"name": "Roblox-TS-Docker",
+	"name": "King-Studios Development",
+	"updateRemoteUserUID": true,
+
 	"build": {
 		"dockerfile": "Dockerfile",
 		"context": ".."
 	},
-	"postCreateCommand": "rokit install --no-trust-check && bun install --force",
-	"shutdownAction": "stopContainer",
-	"updateRemoteUserUID": false,
-	"overrideCommand": true,
-	"remoteUser": "root",
-	"init": true,
-	"containerEnv": {
-		"NODE_ENV": "development"
+
+	"remoteEnv": {
+		"PATH": "${containerEnv:HOME}/.rokit/bin:${containerEnv:HOME}/.local/bin:${containerEnv:PATH}"
 	},
-	"mounts": [
-		{
-			"source": "${localEnv:HOME}/.ssh",
-			"target": "/home/root/.ssh",
-			"type": "bind"
-		}
-	],
+
+	"onCreateCommand": "bash -lc 'curl --proto \"=https\" --tlsv1.2 -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash'",
+
+	"postCreateCommand": "bash -lc 'export PATH=\"$HOME/.rokit/bin:$HOME/.local/bin:$PATH\" && rokit install --no-trust-check && bun install'",
+
+	"postStartCommand": "bash -lc 'echo \"✅ Container ready — bun $(bun --version), rokit $(rokit --version 2>/dev/null || echo missing)\"'",
+
+	"waitFor": "postCreateCommand",
+
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"typescript.tsdk": "node_modules/typescript/lib",
-				"luau-lsp.sourcemap.autogenerate": false,
-				"luau-lsp.diagnostics.workspace": false,
-				"luau-lsp.sourcemap.enabled": false,
-				"editor.defaultFormatter": "biomejs.biome",
-				"editor.formatOnSave": true,
+				"js/ts.tsdk.path": "node_modules/typescript/lib",
 				"files.eol": "\n",
-				"typescript.format.semicolons": "insert",
-				"javascript.format.semicolons": "insert",
-				"eslint.run": "onType",
-				"luau-lsp.ignoreGlobs": [
-					"**/include/**",
-					"**/out/**",
-					"**/node_modules/**",
-					"**/dist/**",
-					"**/scripts/**",
-					"**/network/**"
-				],
-				"terminal.integrated.fontFamily": "'Monaspace Radon Frozen', 'FiraCode Nerd Font'",
-				"typescript.preferences.importModuleSpecifier": "shortest",
+				"editor.codeActionsOnSave": {
+					"source.organizeImports.biome": "explicit"
+				},
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "biomejs.biome",
 				"terminal.integrated.defaultProfile.linux": "zsh",
-				"jest.jestCommandLine": "bun run test:local --",
-				"todo-tree.tree.scanMode": "workspace",
-				"jest.runMode": "on-demand"
+				"bun.runtime": "/usr/local/bin/bun",
+				"task.allowAutomaticTasks": "on"
 			},
 			"extensions": [
-				"DavidAnson.vscode-markdownlint",
-				"github.vscode-github-actions",
-				"roblox-ts.vscode-roblox-ts",
-				"foxundermoon.shell-format",
-				"unthrottled.doki-theme",
-				"Gruntfuggly.todo-tree",
-				"ms-vscode.live-server",
-				"GitHub.copilot-chat",
-				"filiptibell.deputy",
-				"Orta.vscode-jest",
-				"eamodio.gitlens",
 				"oven.bun-vscode",
-				"GitHub.copilot",
-				"biomejs.biome"
+				"biomejs.biome",
+				"roblox-ts.vscode-roblox-ts",
+				"streetsidesoftware.code-spell-checker",
+				"EditorConfig.EditorConfig",
+				"flamework.flamework-vscode",
+				"github.vscode-github-actions"
 			]
 		}
 	}
