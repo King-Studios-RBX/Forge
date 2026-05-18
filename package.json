@@ -1,5 +1,5 @@
 {
-	"name": "@king-studios-rbx/forge",
+	"name": "@kingstudios/forge",
 	"version": "0.4.13",
 	"description": "An App Manager for Vide",
 	"main": "out/init.lua",
@@ -14,6 +14,10 @@
 	],
 	"author": "Loner1536",
 	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/King-Studios-RBX/Forge"
